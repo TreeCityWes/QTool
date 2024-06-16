@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycle Stats</title>
+    <style>
+        body {
+            background-color: black;
+            color: limegreen;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 50px;
+        }
+        th, td {
+            border: 1px solid limegreen;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #222;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto 50px auto;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Cycle Stats</h1>
+    <table id="statsTable">
+        <thead>
+            <tr>
+                <th>Cycle</th>
+                <th>ETH In Cycle</th>
+                <th>Q Produced</th>
+                <th>Total Batches</th>
+                <th>Total Q Supply</th>
+                <th>ETH Burned</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <canvas id="ethInCycleChart" width="400" height="200"></canvas>
+    <canvas id="qProducedChart" width="400" height="200"></canvas>
+    <canvas id="totalBatchesChart" width="400" height="200"></canvas>
+    <canvas id="totalQSupplyChart" width="400" height="200"></canvas>
+    <canvas id="ethBurnedChart" width="400" height="200"></canvas>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('cycle_stats.csv');
+            const data = await response.text();
+            const rows = data.split('\n').slice(1);
+
+            const cycles = [];
+            const ethInCycle = [];
+            const qProduced = [];
+            const totalBatches = [];
+            const totalQSupply = [];
+            const ethBurned = [];
+
+            rows.forEach(row => {
+                const cols = row.split(',');
+                cycles.push(cols[0]);
+                ethInCycle.push(parseFloat(cols[1]));
+                qProduced.push(parseFloat(cols[2]));
+                totalBatches.push(parseInt(cols[3]));
+                totalQSupply.push(parseFloat(cols[4]));
+                ethBurned.push(parseFloat(cols[5]));
+            });
+
+            return { cycles, ethInCycle, qProduced, totalBatches, totalQSupply, ethBurned };
+        }
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('statsTable').querySelector('tbody');
+            data.cycles.forEach((cycle, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${cycle}</td>
+                    <td>${data.ethInCycle[index]}</td>
+                    <td>${data.qProduced[index]}</td>
+                    <td>${data.totalBatches[index]}</td>
+                    <td>${data.totalQSupply[index]}</td>
+                    <td>${data.ethBurned[index]}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function createChart(ctx, label, labels, data) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        borderColor: 'limegreen',
+                        backgroundColor: 'rgba(0,255,0,0.1)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Cycle'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function main() {
+            const data = await fetchData();
+            populateTable(data);
+
+            createChart(document.getElementById('ethInCycleChart').getContext('2d'), 'ETH In Cycle', data.cycles, data.ethInCycle);
+            createChart(document.getElementById('qProducedChart').getContext('2d'), 'Q Produced', data.cycles, data.qProduced);
+            createChart(document.getElementById('totalBatchesChart').getContext('2d'), 'Total Batches', data.cycles, data.totalBatches);
+            createChart(document.getElementById('totalQSupplyChart').getContext('2d'), 'Total Q Supply', data.cycles, data.totalQSupply);
+            createChart(document.getElementById('ethBurnedChart').getContext('2d'), 'ETH Burned', data.cycles, data.ethBurned);
+        }
+
+        main();
+    </script>
+</body>
+</html>
