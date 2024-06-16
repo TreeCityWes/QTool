@@ -154,5 +154,5 @@ def main():
         print(current_cycle_data)
         save_current_cycle_data_to_csv(current_cycle_data)
 
-if __name__ '__main__':
+if __name__ == '__main__':
     main()
