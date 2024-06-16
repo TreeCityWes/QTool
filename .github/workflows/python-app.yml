@@ -7,6 +7,7 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '*/15 * * * *'  # This runs the workflow every 15 minutes
+  workflow_dispatch:  # This allows manual triggering of the workflow
 
 permissions:
   contents: write  # Needed to push changes to the repository
