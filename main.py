@@ -53,10 +53,6 @@ def get_latest_cycle_from_csv(file_path='cycle_stats.csv'):
 def fetch_cycle_stats(start_cycle):
     try:
         current_cycle = QContract.functions.currentCycle().call()
-        if current_cycle <= start_cycle:
-            print(f"No new cycles to fetch. Current cycle is {current_cycle}.")
-            return None
-
         all_stats = []
 
         print(f"Fetching data for cycles {start_cycle + 1} to {current_cycle}...")
@@ -81,6 +77,27 @@ def fetch_cycle_stats(start_cycle):
             }
 
             all_stats.append(stats)
+
+        # Also fetch ongoing cycle data
+        eth_in_cycle = QContract.functions.cycleAccruedFees(current_cycle).call()
+        q_produced = QContract.functions.rewardPerCycle(current_cycle).call()
+        total_entries_scaled = QContract.functions.cycleTotalEntries(current_cycle).call()
+        eth_burned = QContract.functions.nativeBurnedPerCycle(current_cycle).call()
+        total_q_supply = QContract.functions.summedCycleStakes(current_cycle).call()
+
+        # Calculate the actual total batches
+        total_batches = total_entries_scaled // 100
+
+        stats = {
+            'Cycle': current_cycle,
+            'ETH In Cycle': round(from_wei(eth_in_cycle), 3),
+            'Q Produced': round(from_wei(q_produced), 3),
+            'Total Batches': total_batches,
+            'Total Q Supply': round(from_wei(total_q_supply), 3),
+            'ETH Burned': round(from_wei(eth_burned), 3)
+        }
+
+        all_stats.append(stats)
 
         return all_stats
     except Exception as e:
