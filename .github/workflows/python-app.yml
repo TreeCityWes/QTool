@@ -37,9 +37,13 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
-    - name: Pull latest changes
+    - name: Commit uncommitted changes
       run: |
-        git pull origin main --rebase
+        git add cycle_stats.csv last_update.txt
+        git commit -m 'Saving uncommitted changes' || echo "No changes to commit"
+
+    - name: Pull latest changes
+      run: git pull origin main --rebase
 
     - name: Commit and push changes if any
       run: |
@@ -49,5 +53,6 @@ jobs:
         else
           git commit -m 'Update cycle stats'
           git push
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
