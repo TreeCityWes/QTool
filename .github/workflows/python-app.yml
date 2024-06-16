@@ -47,8 +47,10 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
-    - name: Pull latest changes
-      run: git pull origin main
+    - name: Force pull latest changes
+      run: |
+        git fetch origin main
+        git reset --hard origin/main
 
     - name: Add and commit changes
       run: |
