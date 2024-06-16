@@ -43,19 +43,9 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
-    - name: Stash unstaged changes
-      run: git stash || echo "No changes to stash"
-
-    - name: Pull latest changes
-      run: git pull origin main --rebase
-
-    - name: Apply stashed changes
-      if: ${{ steps.stash.outputs.stashed }}
-      run: git stash pop || echo "No stashed changes to apply"
-
-    - name: Force add and commit changes
+    - name: Add and commit changes
       run: |
-        git add -f cycle_stats.csv last_update.txt
+        git add cycle_stats.csv last_update.txt
         git commit -m 'Update cycle stats' || echo "No changes to commit"
         git push || echo "No changes to push"
       env:
