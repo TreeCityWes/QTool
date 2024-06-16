@@ -45,8 +45,15 @@ jobs:
         git add cycle_stats.csv last_update.txt
         git commit -m 'Saving uncommitted changes' || echo "No changes to commit"
 
+    - name: Stash unstaged changes
+      run: git stash
+
     - name: Pull latest changes
       run: git pull origin main --rebase
+
+    - name: Apply stashed changes
+      if: ${{ steps.stash.outputs.stashed }}
+      run: git stash pop
 
     - name: Commit and push changes if any
       run: |
