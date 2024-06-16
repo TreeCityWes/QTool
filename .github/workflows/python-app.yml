@@ -33,20 +33,29 @@ jobs:
       run: python main.py
 
     - name: Check if CSV file exists
-      run: ls -l cycle_stats.csv
+      run: ls -l cycle_stats.csv current_cycle.csv
 
     - name: Display CSV file content
-      run: cat cycle_stats.csv
+      run: |
+        echo "cycle_stats.csv:"
+        cat cycle_stats.csv
+        echo "current_cycle.csv:"
+        cat current_cycle.csv
 
     - name: Configure git
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
+    - name: Pull latest changes
+      run: git pull origin main
+
     - name: Add and commit changes
       run: |
-        git add cycle_stats.csv last_update.txt
+        git add cycle_stats.csv last_update.txt current_cycle.csv
         git commit -m 'Update cycle stats' || echo "No changes to commit"
-        git push || echo "No changes to push"
+
+    - name: Push changes
+      run: git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
