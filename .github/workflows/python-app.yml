@@ -37,17 +37,9 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
-    - name: Stash uncommitted changes
-      run: |
-        git stash --include-untracked
-
     - name: Pull latest changes
       run: |
         git pull origin main --rebase
-
-    - name: Apply stash if necessary
-      run: |
-        git stash pop || true
 
     - name: Commit and push changes if any
       run: |
@@ -57,6 +49,5 @@ jobs:
         else
           git commit -m 'Update cycle stats'
           git push
-        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
