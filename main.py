@@ -119,7 +119,11 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv'):
     if all_stats:
         df = pd.DataFrame(all_stats)
         if os.path.exists(file_path):
-            df.to_csv(file_path, mode='a', header=False, index=False)
+            # Read existing data
+            existing_df = pd.read_csv(file_path)
+            # Combine new and existing data, avoiding duplicates
+            combined_df = pd.concat([existing_df, df]).drop_duplicates(subset=['Cycle'], keep='last')
+            combined_df.to_csv(file_path, index=False)
         else:
             df.to_csv(file_path, index=False)
         # Save the last update time
