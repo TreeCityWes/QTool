@@ -87,7 +87,7 @@ def display_stats(all_stats):
     if all_stats:
         # Format data in green but not headers and borders
         formatted_stats = [
-            {k: f'\033[92m{v}\033[0m' if k not in ['Cycle'] else v for k, v in stat.items()}
+            {k: f'\033[92m{v}\033[0m' if k != 'Cycle' else v for k, v in stat.items()}
             for stat in all_stats
         ]
         print(tabulate(formatted_stats, headers='keys', tablefmt='pretty'))
@@ -98,53 +98,19 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv', update_file='last_
     if all_stats:
         df = pd.DataFrame(all_stats)
         print("DataFrame to save:\n", df)
-        if os.path.exists(file_path):
-            # Read existing data
-            existing_df = pd.read_csv(file_path)
-            print("Existing DataFrame:\n", existing_df)
-            if not existing_df.empty:
-                # Combine new and existing data, avoiding duplicates
-                combined_df = pd.concat([existing_df, df]).drop_duplicates(subset=['Cycle'], keep='last')
-                combined_df.to_csv(file_path, index=False)
-                print("Combined DataFrame:\n", combined_df)
-            else:
-                df.to_csv(file_path, index=False)
-                print("New DataFrame saved:\n", df)
-        else:
-            df.to_csv(file_path, index=False)
-            print("New DataFrame saved:\n", df)
 
-        # Save the last update time to a temporary file
-        temp_update_file = 'last_update_temp.txt'
-        with open(temp_update_file, 'w') as f:
-            f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        print("Last update time saved to temp file")
-        
-        # Check if there's a conflict in the main update file
-        if os.path.exists(update_file):
-            with open(update_file, 'r') as f:
-                content = f.read()
-                if '<<<<<' in content:
-                    print("Conflict detected in update file")
-                    # Resolve conflict (take the latest update)
-                    lines = content.split('\n')
-                    latest_update = max(
-                        line.split()[-1] for line in lines if line.startswith('2024-'))
-                    with open(update_file, 'w') as f:
-                        f.write(f"This data was last updated at {latest_update}\n")
-                    print("Conflict resolved in update file")
-                else:
-                    # No conflict, update the file
-                    with open(update_file, 'w') as f:
-                        f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-                    print("Update file saved")
-        else:
-            # No existing update file, save the new one
-            os.rename(temp_update_file, update_file)
-            print("New update file created")
+        # Always write new data by deleting existing files first
+        if os.path.exists(file_path):
+            os.remove(file_path)
+        df.to_csv(file_path, index=False)
+        print(f"New DataFrame saved to {file_path}")
+
+        # Write the last update time
+        with open(update_file, 'w') as f:
+            f.write(f"This data was last updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        print(f"Update file saved to {update_file}")
     else:
         print("No stats to save.")
-
 
 def main():
     latest_cycle = get_latest_cycle_from_csv()
