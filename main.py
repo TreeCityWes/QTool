@@ -116,15 +116,18 @@ def fetch_current_cycle_data():
         total_supply = QERC20.functions.totalSupply().call()
         burned_balance = QERC20.functions.balanceOf(BURN_ADDRESS_CHECKSUM).call()
 
-        # Calculate circulating supply correctly
-        circulating_supply = from_wei(total_supply + total_staked_q - burned_balance)
+        # Labels corrected as specified
+        total_circulating_supply = from_wei(total_supply)
+        total_supply_corrected = from_wei(total_supply + total_staked_q - burned_balance)
+        percentage_staked = (from_wei(total_staked_q) / total_supply_corrected) * 100
 
         data = {
             'Current Cycle': current_cycle,
-            'Total Circulating Supply': round(circulating_supply, 3),
+            'Total Circulating Supply': round(total_circulating_supply, 3),
             'Total Staked Q': round(from_wei(total_staked_q), 3),
-            'Total Supply': round(from_wei(total_supply), 3),
-            'Total Q Burned': round(from_wei(burned_balance), 3)
+            'Total Supply': round(total_supply_corrected, 3),
+            'Total Q Burned': round(from_wei(burned_balance), 3),
+            'Percentage Staked': round(percentage_staked, 2)
         }
 
         return data
@@ -151,5 +154,5 @@ def main():
         print(current_cycle_data)
         save_current_cycle_data_to_csv(current_cycle_data)
 
-if __name__ == '__main__':
+if __name__ '__main__':
     main()
