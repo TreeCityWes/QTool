@@ -32,6 +32,9 @@ jobs:
     - name: Run script
       run: python main.py
 
+    - name: Check if CSV file exists
+      run: ls -l cycle_stats.csv
+
     - name: Configure git
       run: |
         git config --global user.name 'github-actions'
