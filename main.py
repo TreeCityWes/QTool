@@ -105,11 +105,15 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv'):
             combined_df.to_csv(file_path, index=False)
         else:
             df.to_csv(file_path, index=False)
+        print(f"Stats saved to {file_path}")
+
         # Save the last update time
         with open('last_update.txt', 'w') as f:
             f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        print("Last update time saved")
     else:
         print("No stats to save.")
+
 
 def main():
     latest_cycle = get_latest_cycle_from_csv()
