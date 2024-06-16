@@ -43,7 +43,10 @@ jobs:
 
     - name: Commit and push changes if any
       run: |
-        git add cycle_stats.csv last_update.txt
+        git add cycle_stats.csv
+        if [ -f last_update.txt ]; then
+          git add last_update.txt
+        fi
         if git diff-index --quiet HEAD; then
           echo "No changes to commit"
         else
