@@ -1,20 +1,11 @@
 import os
 import json
 from web3 import Web3
-from dotenv import load_dotenv
 import pandas as pd
 from tabulate import tabulate
 
-# Load environment variables
-load_dotenv()
-
-ALCHEMY_API_URL = os.getenv('ALCHEMY_API_URL')
-
-# Verify that environment variables are loaded correctly
-if not ALCHEMY_API_URL:
-    raise ValueError("ALCHEMY_API_URL environment variable is missing")
-
-# Define contract addresses
+# Hardcoded RPC URL and contract addresses
+ANKR_API_URL = 'https://rpc.ankr.com/eth'
 Q_CONTRACT_ADDRESS = '0xB09da56fa0f59E6a6Ea7C851AD30956351B0BB7D'
 Q_PAYMENT_ADDRESS = '0xB207b52fe740d8981A78f1714c7089B662AA6c1f'
 Q_ERC20_ADDRESS = '0xACA40632C51C2a03209D2714b88Aa0f1456A2101'
@@ -33,7 +24,7 @@ abis = {
 }
 
 # Connect to the Ethereum network
-web3 = Web3(Web3.HTTPProvider(ALCHEMY_API_URL))
+web3 = Web3(Web3.HTTPProvider(ANKR_API_URL))
 
 # Verify connection
 if not web3.is_connected():
