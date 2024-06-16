@@ -3,6 +3,7 @@ import json
 from web3 import Web3
 import pandas as pd
 from tabulate import tabulate
+from datetime import datetime
 
 # Hardcoded RPC URL and contract addresses
 ANKR_API_URL = 'https://rpc.ankr.com/eth'
@@ -104,6 +105,9 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv'):
             df.to_csv(file_path, mode='a', header=False, index=False)
         else:
             df.to_csv(file_path, index=False)
+        # Save the last update time
+        with open('last_update.txt', 'w') as f:
+            f.write(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     else:
         print("No stats to save.")
 
