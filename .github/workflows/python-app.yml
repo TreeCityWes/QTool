@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '*/15 * * * *'  # This runs the workflow every 15 minutes
-  workflow_dispatch:  # This allows manual triggering of the workflow
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write  # Needed to push changes to the repository
@@ -28,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install web3 pandas python-dotenv tabulate
+        pip install -r requirements.txt  # Install dependencies from requirements.txt
 
     - name: Run script
       run: python main.py
