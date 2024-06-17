@@ -104,7 +104,7 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv', update_file='last_
 
         # Write the last update time
         with open(update_file, 'w') as f:
-            f.write(f"This data was last updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"This data was last updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC\n")
         print(f"Update file saved to {update_file}")
     else:
         print("No stats to save.")
@@ -118,15 +118,17 @@ def fetch_current_cycle_data():
         eth_in_cycle = QContract.functions.cycleAccruedFees(current_cycle).call()
 
         # Calculate circulating supply correctly
-        circulating_supply = from_wei(total_supply + total_staked_q - burned_balance)
+        total_circulating_supply = from_wei(total_supply - burned_balance)
+        total_supply_corrected = from_wei(total_supply + total_staked_q - burned_balance)
+        percentage_staked = (from_wei(total_staked_q) / total_supply_corrected) * 100
 
         data = {
             'Current Cycle': current_cycle,
-            'Total Circulating Supply': round(circulating_supply, 3),
+            'Total Circulating Supply': round(total_circulating_supply, 3),
             'Total Staked Q': round(from_wei(total_staked_q), 3),
-            'Total Supply': round(from_wei(total_supply), 3),
+            'Total Supply': round(total_supply_corrected, 3),
             'Total Q Burned': round(from_wei(burned_balance), 3),
-            'Percentage Staked': round((total_staked_q / (total_supply + total_staked_q)) * 100, 2),
+            'Percentage Staked': round(percentage_staked, 2),
             'ETH in Cycle': round(from_wei(eth_in_cycle), 3)
         }
 
