@@ -22,7 +22,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -49,4 +49,4 @@ jobs:
         timestamp=$(date -u)
         git commit -m "Data updated on ${timestamp}" || exit 0
         git pull --rebase origin main
-        git push https://${{ secrets.GH_TOKEN }}@github.com/TreeCityWes/QTool.git HEAD:main
+        git push https://${{ secrets.GITHUB_TOKEN }}@github.com/TreeCityWes/QTool.git HEAD:main
