@@ -104,7 +104,7 @@ def save_stats_to_csv(all_stats, file_path='cycle_stats.csv', update_file='last_
 
         # Write the last update time
         with open(update_file, 'w') as f:
-            f.write(f"This data was last updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"This data was last updated at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}UTC \n")
         print(f"Update file saved to {update_file}")
     else:
         print("No stats to save.")
