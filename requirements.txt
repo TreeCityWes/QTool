@@ -1,6 +1,3 @@
 web3
 pandas
-python-dotenv
 tabulate
-flake8
-pytest
