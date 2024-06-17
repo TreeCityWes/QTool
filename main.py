@@ -2,7 +2,6 @@ import os
 import json
 from web3 import Web3
 import pandas as pd
-from tabulate import tabulate
 from datetime import datetime
 
 # Hardcoded RPC URL and contract addresses
@@ -118,7 +117,8 @@ def fetch_current_cycle_data():
         eth_in_cycle = QContract.functions.cycleAccruedFees(current_cycle).call()
 
         # Calculate circulating supply correctly
-        circulating_supply = from_wei(total_supply + total_staked_q - burned_balance)
+        circulating_supply = from_wei(total_supply - burned_balance)
+        percentage_staked = (total_staked_q / total_supply) * 100
 
         data = {
             'Current Cycle': current_cycle,
@@ -126,7 +126,7 @@ def fetch_current_cycle_data():
             'Total Staked Q': round(from_wei(total_staked_q), 3),
             'Total Supply': round(from_wei(total_supply), 3),
             'Total Q Burned': round(from_wei(burned_balance), 3),
-            'Percentage Staked': round((total_staked_q / total_supply) * 100, 2),
+            'Percentage Staked': round(percentage_staked, 2),
             'ETH in Cycle': round(from_wei(eth_in_cycle), 3)
         }
 
