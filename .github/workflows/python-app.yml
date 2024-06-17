@@ -2,11 +2,12 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches-ignore:
+      - "main"
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,48 +16,37 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
       with:
-        python-version: "3.10"
-
+        token: ${{ secrets.GH_TOKEN }}
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-
-    - name: Run script
+        
+    - name: Run main.py script
       run: python main.py
-
-    - name: Check if CSV files exist
-      run: ls -l cycle_stats.csv last_update.txt current_cycle.csv
-
-    - name: Display CSV files content
+      
+    - name: Commit and push if it changed
       run: |
-        cat cycle_stats.csv
-        cat last_update.txt
-        cat current_cycle.csv
-
-    - name: Configure git
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
-
-    - name: Pull latest changes
-      run: |
-        git fetch origin main
-        git reset --hard origin/main
-
-    - name: Add and commit changes
-      run: |
-        git add cycle_stats.csv last_update.txt current_cycle.csv
-        git commit -m 'Update cycle stats' || echo "No changes to commit"
-
-    - name: Push changes
-      run: git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git config user.name "TreeCityWes"
+        git config user.email "wes@treecitytrading.us"
+        git add -A
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        timestamp=$(date -u)
+        git commit -m "Data updated on ${timestamp}" || exit 0
+        git pull --rebase origin main
+        git push https://${{ secrets.GH_TOKEN }}@github.com/TreeCityWes/QTool.git HEAD:main
