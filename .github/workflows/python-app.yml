@@ -32,8 +32,11 @@ jobs:
     - name: Run script
       run: python main.py
 
-    - name: Check if CSV file exists
-      run: ls -l cycle_stats.csv
+    - name: Verify CSV files exist
+      run: |
+        ls -l cycle_stats.csv
+        ls -l last_update.txt
+        ls -l current_cycle.csv
 
     - name: Display CSV file content
       run: cat cycle_stats.csv
