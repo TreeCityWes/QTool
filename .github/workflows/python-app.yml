@@ -1,4 +1,4 @@
-name: Update Cycle Data
+name: Python application
 
 on:
   push:
@@ -13,17 +13,14 @@ permissions:
   contents: write  # Needed to push changes to the repository
 
 jobs:
-  update-cycle-data:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v4
 
     - name: Set up Python 3.10
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: "3.10"
 
@@ -35,25 +32,20 @@ jobs:
     - name: Run script
       run: python main.py
 
-    - name: Check if CSV files exist
-      run: ls -l cycle_stats.csv current_cycle.csv
+    - name: Check if CSV file exists
+      run: ls -l cycle_stats.csv
 
-    - name: Display CSV files content
-      run: |
-        echo "cycle_stats.csv:"
-        cat cycle_stats.csv
-        echo "current_cycle.csv:"
-        cat current_cycle.csv
+    - name: Display CSV file content
+      run: cat cycle_stats.csv
 
     - name: Configure git
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
 
-    - name: Pull latest changes
+    - name: Remove old CSV files
       run: |
-        git fetch origin main
-        git reset --hard origin/main
+        git rm -f cycle_stats.csv last_update.txt current_cycle.csv || true
 
     - name: Add and commit changes
       run: |
