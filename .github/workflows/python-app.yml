@@ -32,11 +32,8 @@ jobs:
     - name: Run script
       run: python main.py
 
-    - name: Verify CSV files exist
-      run: |
-        ls -l cycle_stats.csv
-        ls -l last_update.txt
-        ls -l current_cycle.csv
+    - name: Check if CSV file exists
+      run: ls -l cycle_stats.csv
 
     - name: Display CSV file content
       run: cat cycle_stats.csv
@@ -49,6 +46,12 @@ jobs:
     - name: Remove old CSV files
       run: |
         git rm -f cycle_stats.csv last_update.txt current_cycle.csv || true
+
+    - name: Verify new CSV files
+      run: |
+        ls -l cycle_stats.csv
+        ls -l last_update.txt
+        ls -l current_cycle.csv
 
     - name: Add and commit changes
       run: |
